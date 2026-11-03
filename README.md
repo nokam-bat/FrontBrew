@@ -118,7 +118,53 @@ L'API pourra notamment être utilisée pour récupérer des informations telles 
 
 ## Structure du projet
 L'organisation générale du projet repose sur la structure suivante:
-à ajouter quand j'aurais crée l'arborescence de base.
+
+src/
+│
+├── assets/            # Fichiers statiques globaux (images, logos, styles CSS globaux)
+│   └── main.css
+│
+├── components/        # Composants réutilisables "génériques" (petits morceaux d'UI)
+│   ├── BreweryCard.vue
+│   └── NavBar.vue
+│
+├── views/             # Vues / Pages principales liées aux routes (Vue Router)
+│   ├── HomeView.vue
+│   ├── BreweryListView.vue
+│   └── BreweryDetailView.vue
+│
+├── router/            # Configuration des routes de l'application
+│   └── index.js
+│
+├── stores/            # Stores Pinia (gestion de l'état global / données de l'API)
+│   └── breweryStore.js
+│
+├── services/          # Configuration d'Axios et appels aux API externes
+│   └── api.js
+│
+├── App.vue            # Composant racine de l'application
+└── main.js            # Point d'entrée JavaScript / montage de l'app
+
+On va modifier au fur et à mesure de l'avancée du projet.
+
+
+assets/	        Très bien pour centraliser les ressources globales.
+components/	    Indispensable pour éviter de répéter du code.
+views/	        Très bonne séparation entre les pages et les petits composants.
+router/	        Logique avec Vue Router.
+stores/	        Adapté à Pinia pour partager les données des brasseries.
+services/	    Très bonne idée pour isoler les appels à l'API.
+
+api.js          configurer Axios et centraliser l'accès à Open Brewery DB (évite de répéterla configuration dans les stores)
+breweryStore.js centralise les données/actions liées aux brasseries.
+=> récupère la liste des brasseries
+=> recherche une brasserie
+=> récupère les détails d'une brasserie
+gère les états de chargement et les erreurs
+composants      => BreweryCard,^.vue pourra afficher une brasserie sous forme de carte
+                => NavBar,vue sera réutilisé sur les différentes pages
+
+
 
 ## Initialisation et configuration du projet
 
