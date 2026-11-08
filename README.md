@@ -178,8 +178,8 @@ Le fichier `.gitignore` sert à indiquer à Git quels fichiers et dossiers ne do
 Voici une configuration adaptée au projet :
 
 ```gitignore
-# Logs et erreurs
-logs/
+# Logs et journaux d'erreurs générés par Node et les gestionnaires de paquets
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -187,37 +187,47 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
-# Dépendances
+# Dépendances téléchargées (très lourd, à réinstaller via `npm install`)
 node_modules/
 
-# Fichiers générés lors de la compilation
+# Dossiers générés par Vite lors de la compilation (à réinstaller via `npm run build`)
 dist/
 dist-ssr/
 
-# Fichiers locaux
+# Fichiers de configuration ou d'environnement locaux
 *.local
 
-# Variables d'environnement
+# Variables d'environnement confidentielles (clés API, secrets)
 .env
 .env.*
 !.env.example
 
-# Configuration personnelle de VS Code
+
+# Configuration personnelle de l'éditeur VS Code (garde uniquement la liste des extensions recommandées)
 .vscode/*
 !.vscode/extensions.json
 
-# Configuration des IDE JetBrains
-.idea/
+# Fichiers de configuration de l'IDE JetBrains (Rider, WebStorm) 
+.idea
 
-# Fichiers système
+# Fichiers système invisibles (macOS / Windows)
 .DS_Store
 Thumbs.db
 
-# Fichiers temporaires
+
+# Fichiers de projet Visual Studio et temporaires (Rider / Windows)
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+
+
+# Fichiers de sauvegarde temporaires générés par les éditeurs de texte (Vim, etc.)
 *.sw?
 
-# Cache npm
+# Dossier de cache local de npm
 .npm/
+
 ```
 
 **Pourquoi ces exclusions ?**
