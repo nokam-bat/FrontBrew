@@ -1,8 +1,20 @@
 {
   "name": "frontbrew",
-  "private": true,
   "version": "0.0.0",
+  "private": true,
+  "description": "**FrontBrew** est une application web développée avec Vue.js 3, dont l'objectif est de découvrir et d'explorer des brasseries à travers le monde grâce à l'API publique Open Brewery DB.",
+  "homepage": "https://github.com/nokam-bat/FrontBrew#readme",
+  "bugs": {
+    "url": "https://github.com/nokam-bat/FrontBrew/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nokam-bat/FrontBrew.git"
+  },
+  "license": "ISC",
+  "author": "",
   "type": "module",
+  "main": "vite.config.js",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,12 +22,13 @@
   },
   "dependencies": {
     "axios": "^1.21.0",
+    "nodemon": "^3.1.14",
     "pinia": "^4.1.0",
     "vue": "^3.5.44",
     "vue-router": "^5.4.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^6.0.10",
-    "vite": "^8.3.6"
+    "vite": "^8.3.7"
   }
 }

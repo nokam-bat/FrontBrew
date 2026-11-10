@@ -1,7 +1,8 @@
 <script setup>
-import HelloWorld from './components/HelloWorld.vue'
+import Axios from './components/testAxios.vue'
 </script>
 
 <template>
-  <HelloWorld />
+  <Axios />
 </template>
+
