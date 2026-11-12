@@ -91,6 +91,23 @@ Par défaut, il s'agit généralement de :
 http://localhost:5173/
 ```
 
+## Utilisation
+
+1. Ouvrir l'application (`npm run dev`, puis http://localhost:5173/).
+2. Saisir un mot-clé dans la barre de recherche (nom, ville, type… par ex. `dog`, `san diego`), puis appuyer sur **Entrée** ou cliquer sur **Rechercher**.
+   - Le mot-clé doit contenir au moins 2 caractères ; les espaces superflus et les caractères spéciaux sont retirés automatiquement.
+3. Pendant la recherche, un indicateur « Recherche en cours… » s'affiche.
+4. Les brasseries trouvées s'affichent sous forme de cartes (nom, type, ville, pays, lien vers le site web).
+5. En cas de problème (pas de connexion, serveur indisponible…), une alerte s'affiche avec un bouton **Réessayer**.
+6. Le mot-clé est conservé dans l'adresse (`/?q=dog`) : la recherche peut être rechargée ou partagée.
+7. Cliquer sur une brasserie ouvre sa **fiche détaillée** (`/brasserie/:id`) : adresse, téléphone, site web et carte OpenStreetMap. Le bouton **Retour** ramène aux résultats.
+8. Le bouton **Tout voir** de l'en-tête affiche toutes les brasseries, triées par nom, 20 par page (`/tout?page=2`).
+9. Un clic sur le logo ramène à l'accueil.
+10. **Au hasard** (en-tête, accueil et fiche) ouvre une brasserie tirée au hasard grâce à l'endpoint `/breweries/random`. L'accueil affiche aussi 3 brasseries « À découvrir » (`/breweries/random?size=3`), renouvelables avec « Autres suggestions ».
+11. Sur l'accueil, les exemples (« dog », « Portland »…) lancent une recherche en un clic.
+
+L'interface s'adapte aux écrans mobiles et desktop (grille de cartes fluide, barre de recherche sur toute la largeur sur petit écran).
+
 ## Commandes disponibles
 
 | Commande | Utilisation |
@@ -99,6 +116,7 @@ http://localhost:5173/
 | `npm run dev` | Démarrer le serveur de développement |
 | `npm run build` | Compiler le projet pour la production |
 | `npm run preview` | Prévisualiser la version compilée |
+| `npm test` | Lancer les tests unitaires (Vitest) |
 | `npm list vue vite @vitejs/plugin-vue vue-router pinia axios` | Vérifier les versions des dépendances |
 
 ## API utilisée
@@ -119,7 +137,51 @@ L'API pourra notamment être utilisée pour récupérer des informations telles 
 ## Structure du projet
 L'organisation générale du projet repose sur la structure suivante:
 
-à remplir au fur et à mesure
+```text
+src/
+├── App.vue                    # En-tête, <RouterView />, pied de page
+├── main.js                    # Point d'entrée (Vue + Pinia + Vue Router)
+├── router/
+│   └── index.js               # Routes : /, /tout, /brasserie/:id, 404
+├── views/
+│   ├── HomeView.vue           # Page de recherche et de résultats
+│   ├── AllBreweriesView.vue   # « Tout voir » : liste paginée
+│   ├── BreweryDetailView.vue  # Fiche détaillée d'une brasserie
+│   ├── NotFoundView.vue       # Page 404
+│   └── __tests__/
+├── assets/
+│   ├── logo-mark.svg          # Logo FrontBrew (repère + chope)
+│   └── bg-bokeh.jpg           # Fond « lumières de bar » (généré, libre de droits)
+├── composables/
+│   └── useRandomBrewery.js    # Ouvre une brasserie au hasard
+├── components/
+│   ├── AppHeader.vue          # En-tête : logo, Tout voir, Au hasard
+│   ├── DiscoverySection.vue   # « À découvrir » (3 brasseries au hasard)
+│   ├── BreweryTile.vue        # Petite carte d'une brasserie
+│   ├── SearchBar.vue          # US 04 – barre de recherche
+│   ├── MediaList.vue          # US 05 – conteneur de la liste
+│   ├── MediaCard.vue          # US 05 – carte d'une brasserie
+│   ├── LoadingSpinner.vue     # US 06 – loader
+│   ├── ErrorAlert.vue         # US 06 – alerte d'erreur
+│   ├── PaginationBar.vue      # Pagination (Tout voir)
+│   ├── BreweryMap.vue         # Carte OpenStreetMap
+│   └── __tests__/             # Tests des composants
+├── services/
+│   └── breweryService.js      # Appels Axios à Open Brewery DB
+├── stores/
+│   └── breweryStore.js        # État global (résultats, isLoading, error)
+└── utils/
+    ├── sanitizeQuery.js       # Validation / nettoyage du mot-clé
+    └── format.js              # Types, pays, téléphone, adresse en français
+```
+
+### Tests
+
+Les tests utilisent **Vitest**, **@vue/test-utils** et **jsdom** :
+
+```bash
+npm test
+```
 
 ## Initialisation et configuration du projet
 
