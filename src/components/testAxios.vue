@@ -175,6 +175,8 @@ export default {
 
     // Récupérer les détails d'une brasserie spécifique
     async getBreweryDetails(breweryId) {
+      if (this.isLoading) return
+      this.isLoading = true
       try {
         this.breweries = []
         this.error = null
