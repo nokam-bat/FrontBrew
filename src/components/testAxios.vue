@@ -11,18 +11,13 @@
     <!-- Message d'erreur -->
     <h1 v-if="error">Une erreur s'est produite : {{ error.message }}</h1>
 
-    <!-- Affichage des brasseries -->
-    <ul v-if="breweries.length > 0 && showBreweries == true && !error">
-      <li
-        v-for="brewery in breweries"
-        :key="brewery.id"
-      >
-        <h3>{{ brewery.name }}</h3>
-        <p>{{ brewery.brewery_type }}</p>
-        <p>{{ brewery.city }}, {{ brewery.state_province }}, {{ brewery.country }}</p>
-        <button @click="getBreweryDetails(brewery.id)">Voir les détails</button>
-      </li>
-    </ul>
+    <!-- Affichage des brasseries (US 05 : MediaList + MediaCard) -->
+    <MediaList
+      v-if="showBreweries && !error && !details"
+      :items="breweries"
+      :has-searched="hasSearched"
+      @details="getBreweryDetails"
+    />
 
     <!-- Détails de la brasserie -->
     <div v-if="details">
@@ -53,15 +48,19 @@
 
 <script>
 import axios from 'axios'
+import MediaList from './MediaList.vue'
 
 export default {
+  components: { MediaList },
+
   data() {
     return {
       breweries: [],
       showBreweries: true,
       searchQuery: '',
       error: null,
-      details: false
+      details: false,
+      hasSearched: false // US 05 : pour afficher « 404 - Not found » si la recherche ne trouve rien
     }
   },
 
@@ -103,6 +102,7 @@ export default {
 
         this.breweries = response.data
         this.showBreweries = true
+        this.hasSearched = true
       } catch (error) {
         this.error = error
         console.error(error)
