@@ -122,6 +122,8 @@ export default {
 
     // Chercher les brasseries en fonction de la requête de recherche (ex tester avec : Brouwhuys)
     async searchBreweries() {
+      if (this.isLoading) return
+      this.isLoading = true
       try {
         this.error = null
         this.details = false
@@ -133,13 +135,22 @@ export default {
         this.showBreweries = true
         this.hasSearched = true
       } catch (error) {
-        this.error = error
+        this.error = {
+          code: error.response?.status || error.code || 'UNKOWN_ERROR',
+          message: error.response
+          ? 'Le serveur ne peut pas traiter la demande. Réessaie plus tard.': error.request || error.code === 'ERR_NETWORK'
+          ? 'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.' : 'Une erreur inattendue est survenue.',
+        }
         console.error(error)
+      } finally {
+        this.isLoading = false
       }
     },
 
     // Prend une brewerie aléatoire
     async getRandomBrewery() {
+      if (this.isLoading) return
+      this.isLoading = true
       try {
         this.error = null
         this.details = false
@@ -150,8 +161,15 @@ export default {
         this.breweries = response.data
         this.showBreweries = true
       } catch (error) {
-        this.error = error
+        this.error = {
+          code: error.response?.status || error.code || 'UNKOWN_ERROR',
+          message: error.response
+          ? 'Le serveur ne peut pas traiter la demande. Réessaie plus tard.': error.request || error.code === 'ERR_NETWORK'
+          ? 'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.' : 'Une erreur inattendue est survenue.',
+        }
         console.error(error)
+      } finally {
+        this.isLoading = false
       }
     },
 
@@ -167,10 +185,43 @@ export default {
         this.brewery = response.data
         this.details = true
       } catch (error) {
-        this.error = error
+        this.error = {
+          code: error.response?.status || error.code || 'UNKOWN_ERROR',
+          message: error.response
+          ? 'Le serveur ne peut pas traiter la demande. Réessaie plus tard.': error.request || error.code === 'ERR_NETWORK'
+          ? 'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.' : 'Une erreur inattendue est survenue.',
+        }
         console.error(error)
+      } finally {
+        this.isLoading = false
       }
     }
   }
 }
 </script>
+
+<!-- US 06 : dessin du spinner-->
+<style scoped>
+/* US 06 : cercle visible pendant le chargement. */
+.spinner {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  margin-right: .5rem;
+  border: 3px solid #ddd;
+  border-top-color: #71451c;
+  border-radius: 50%;
+  animation: spin .8s linear infinite;
+}
+
+/* US 06 : faire tourner le cercle. */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* Respecter les préférences de réduction des animations.
+   Le texte de chargement reste visible. */
+@media (prefers-reduced-motion: reduce) {
+  .spinner { animation: none; }
+}
+</style>
