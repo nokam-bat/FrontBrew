@@ -1,8 +1,8 @@
 <template>
   <div>
-    <!-- Champ de recherche -->
-    <input type="text" v-model="searchQuery" placeholder="Rechercher une brasserie" />
-    <button :disabled="isLoading" @click="searchBreweries">Rechercher</button> <!-- US 06 : ajouter disabled aux boutons-->
+    <!-- US 04 : la nouvelle barre de recherche transmet le texte à SearchBreweries. -->
+    <SearchBar :disabled="isLoading" @search="searchBreweries" /> <!-- @search écoute le text envoyé par SearchBar et disabled bloque la barre pendant le chargement -->
+    
     <!-- Boutons pour afficher ou cacher les brasseries -->
     <button :disabled="isLoading" @click="ShowBreweries">Voir tout</button>
     <button :disabled="isLoading" @click="HideBreweries">Cacher tout</button>
@@ -51,7 +51,7 @@
       <p v-if="brewery.phone">{{ brewery.phone }}</p>
       <h2 v-if="brewery.website_url">Site web</h2>
       <!-- Pour l'instant le lien ne fonctionne pas -->
-      <a href={{ brewery.website_url }} target="_blank" v-if="brewery.website_url">
+      <a href="brewery.website_url" target="_blank" rel="noopener noreferrer" v-if="brewery.website_url"> <!-- Modification de la syntaxe pour prévenir une erreur de compilation -->
         {{ brewery.website_url }}
       </a>
     </div>
@@ -62,15 +62,16 @@
 <script>
 import axios from 'axios'
 import MediaList from './MediaList.vue'
+import SearchBar from './SearchBar.vue' // US 04 : importer le composant de barre de recherche
+import { searchBreweries as searchBreweriesApi} from '../services/breweries.js' // US 04 : importation de la fonction qui apelle l'API
 
 export default {
-  components: { MediaList },
+  components: { MediaList, SearchBar },
 
   data() {
     return {
       breweries: [],
       showBreweries: true,
-      searchQuery: '',
       error: null,
       isLoading: false, // US 06 : vrai uniquement pendant une requête HTTP.
       details: false,
@@ -121,17 +122,16 @@ export default {
     },
 
     // Chercher les brasseries en fonction de la requête de recherche (ex tester avec : Brouwhuys)
-    async searchBreweries() {
+    async searchBreweries(term) {
+      // US 04 : ne rien envoyer si le texte est vide.
+      if (typeof term!== 'string' || !term.trim()) return
       if (this.isLoading) return
       this.isLoading = true
       try {
         this.error = null
         this.details = false
-        const response = await axios.get(
-          `https://api.openbrewerydb.org/v1/breweries/search?query=${this.searchQuery}`
-        )
-
-        this.breweries = response.data
+        // US 04 : le service renvoie directement le tableau.
+        this.breweries = await searchBreweriesApi(term)
         this.showBreweries = true
         this.hasSearched = true
       } catch (error) {

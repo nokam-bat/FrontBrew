@@ -23,9 +23,12 @@ describe('US 06 — chargement et erreurs', () => {
   let wrapper
   beforeEach(() => {
     axios.get.mockReset()
-    wrapper = mount(TestAxios)
+    wrapper = mount(TestAxios, { attachTo: document.body})
   })
-  afterEach(() => wrapper.unmount())
+  afterEach(() => {
+    wrapper.unmount()
+    document.body.innerHTML = ''
+})
 
   async function search() {
     await wrapper.get('input').setValue('Lac')
