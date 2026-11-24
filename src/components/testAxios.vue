@@ -8,6 +8,9 @@
     <button :disabled="isLoading" @click="HideBreweries">Cacher tout</button>
     <button :disabled="isLoading" @click="getRandomBrewery">Brasserie aléatoire</button>
 
+    <!-- US 09 : filtres de l'API (partie du nom, ville, pays, type) -->
+    <BreweryFilters :disabled="isLoading" @filter="filterBreweries" />
+
 
     <!-- US 06 : ce bloc existe seulement pendant la requête. -->
      <div v-if="isLoading" role="status" data-test="loader">
@@ -31,30 +34,13 @@
       @details="getBreweryDetails"
     />
 
-    <!-- Détails de la brasserie -->
-     <!-- US 06 : masquer les anciens détails pendant l'attente ou une erreur. -->
-    <div v-if="details && !isLoading && !error">
-      <h1>{{ brewery.name }} - {{ brewery.brewery_type }}</h1>
-      <h2>Adresse</h2>
-      <p>
-        {{ brewery.address_1 }}
-        <br v-if="brewery.address_2">
-        {{ brewery.address_2 }}
-        <br v-if="brewery.address_3">
-        {{ brewery.address_3 }}
-        <br>
-        {{ brewery.postal_code }} {{ brewery.city }}
-        <br>
-        {{ brewery.state_province }}, {{ brewery.country }}
-      </p>
-      <h2 v-if="brewery.phone">Contact</h2>
-      <p v-if="brewery.phone">{{ brewery.phone }}</p>
-      <h2 v-if="brewery.website_url">Site web</h2>
-      <!-- Pour l'instant le lien ne fonctionne pas -->
-      <a href="brewery.website_url" target="_blank" rel="noopener noreferrer" v-if="brewery.website_url"> <!-- Modification de la syntaxe pour prévenir une erreur de compilation -->
-        {{ brewery.website_url }}
-      </a>
-    </div>
+    <!-- US 09 : fiche de la brasserie (champs absents gérés dans BreweryDetail) -->
+    <!-- US 06 : masquer l'ancienne fiche pendant l'attente ou une erreur. -->
+    <BreweryDetail
+      v-if="details && brewery && !isLoading && !error"
+      :brewery="brewery"
+      @back="backToList"
+    />
 
   </div>
 </template>
@@ -64,9 +50,12 @@ import axios from 'axios'
 import MediaList from './MediaList.vue'
 import SearchBar from './SearchBar.vue' // US 04 : importer le composant de barre de recherche
 import { searchBreweries as searchBreweriesApi} from '../services/breweries.js' // US 04 : importation de la fonction qui apelle l'API
+import { getBreweryById, filterBreweries as filterBreweriesApi, toUserError } from '../services/breweries.js' // US 09
+import BreweryDetail from './BreweryDetail.vue' // US 09 : fiche de la brasserie
+import BreweryFilters from './BreweryFilters.vue' // US 09 : filtres
 
 export default {
-  components: { MediaList, SearchBar },
+  components: { MediaList, SearchBar, BreweryDetail, BreweryFilters },
 
   data() {
     return {
@@ -75,6 +64,7 @@ export default {
       error: null,
       isLoading: false, // US 06 : vrai uniquement pendant une requête HTTP.
       details: false,
+      brewery: null, // US 09 : la brasserie affichée dans la fiche
       hasSearched: false // US 05 : pour afficher « 404 - Not found » si la recherche ne trouve rien
     }
   },
@@ -173,26 +163,42 @@ export default {
       }
     },
 
-    // Récupérer les détails d'une brasserie spécifique
+    // US 09 : récupérer la fiche d'une brasserie grâce à son identifiant
     async getBreweryDetails(breweryId) {
       if (this.isLoading) return
       this.isLoading = true
       try {
-        this.breweries = []
+        // On garde la liste en mémoire pour pouvoir y revenir avec « Retour ».
         this.error = null
-        const response = await axios.get(
-          `https://api.openbrewerydb.org/v1/breweries/${breweryId}`
-        )
-
-        this.brewery = response.data
+        this.brewery = await getBreweryById(breweryId)
         this.details = true
       } catch (error) {
-        this.error = {
-          code: error.response?.status || error.code || 'UNKOWN_ERROR',
-          message: error.response
-          ? 'Le serveur ne peut pas traiter la demande. Réessaie plus tard.': error.request || error.code === 'ERR_NETWORK'
-          ? 'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.' : 'Une erreur inattendue est survenue.',
-        }
+        this.error = toUserError(error) // US 06 : même message et même code
+        console.error(error)
+      } finally {
+        this.isLoading = false
+      }
+    },
+
+    // US 09 : revenir à la liste depuis la fiche
+    backToList() {
+      this.details = false
+      this.brewery = null
+      this.showBreweries = true
+    },
+
+    // US 09 : chercher avec les filtres de l'API (by_name accepte une partie du nom)
+    async filterBreweries(filters) {
+      if (this.isLoading) return
+      this.isLoading = true
+      try {
+        this.error = null
+        this.details = false
+        this.breweries = await filterBreweriesApi(filters)
+        this.showBreweries = true
+        this.hasSearched = true
+      } catch (error) {
+        this.error = toUserError(error)
         console.error(error)
       } finally {
         this.isLoading = false
