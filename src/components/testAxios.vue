@@ -84,9 +84,9 @@ export default {
     // Récupérer toutes les brasseries
     async ShowBreweries() {
       // US 06 : empêcher une deuxième requête pendant le chargement.
-      if (this.isLoading) return 
+      if (this.isLoading) return  // return dit de sortir, éventuellement en retournant le résultat de la fonction
       // US 06 :  afficher le loader avant de lancer la requête
-      this.isLoading = true
+      this.isLoading = true //else implicite
       
       try {
         this.error = null
