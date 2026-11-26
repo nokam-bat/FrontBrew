@@ -1,26 +1,42 @@
 <template>
-  <div>
-    <!-- US 04 : la nouvelle barre de recherche transmet le texte à SearchBreweries. -->
-    <SearchBar :disabled="isLoading" @search="searchBreweries" /> <!-- @search écoute le text envoyé par SearchBar et disabled bloque la barre pendant le chargement -->
-    
-    <!-- Boutons pour afficher ou cacher les brasseries -->
-    <button :disabled="isLoading" @click="ShowBreweries">Voir tout</button>
-    <button :disabled="isLoading" @click="HideBreweries">Cacher tout</button>
-    <button :disabled="isLoading" @click="getRandomBrewery">Brasserie aléatoire</button>
+  <div class="page">
+    <!-- Design : bandeau d'accueil avec la recherche -->
+    <section class="hero">
+      <div class="container hero__inner">
+        <h1 class="hero__title">Trouvez une brasserie proche de chez vous</h1>
+        <p class="hero__subtitle">
+          Cherchez par nom, ville ou pays parmi les brasseries référencées par Open Brewery DB.
+        </p>
 
-    <!-- US 09 : filtres de l'API (partie du nom, ville, pays, type) -->
-    <BreweryFilters :disabled="isLoading" @filter="filterBreweries" />
+        <!-- US 04 : la nouvelle barre de recherche transmet le texte à SearchBreweries. -->
+        <SearchBar :disabled="isLoading" @search="searchBreweries" /> <!-- @search écoute le text envoyé par SearchBar et disabled bloque la barre pendant le chargement -->
 
+        <!-- Boutons pour afficher ou cacher les brasseries -->
+        <div class="toolbar">
+          <button :disabled="isLoading" @click="ShowBreweries">Voir tout</button>
+          <button :disabled="isLoading" @click="HideBreweries">Cacher tout</button>
+          <button :disabled="isLoading" @click="getRandomBrewery">Brasserie aléatoire</button>
+        </div>
 
+        <!-- US 09 : filtres de l'API (partie du nom, ville, pays, type) -->
+        <details class="advanced">
+          <summary>Filtres avancés</summary>
+          <BreweryFilters :disabled="isLoading" @filter="filterBreweries" />
+        </details>
+      </div>
+    </section>
+
+    <!-- Design : zone des résultats -->
+    <section class="container results">
     <!-- US 06 : ce bloc existe seulement pendant la requête. -->
-     <div v-if="isLoading" role="status" data-test="loader">
+     <div v-if="isLoading" class="loader" role="status" data-test="loader">
       <span class="spinner" aria-hidden="true"></span>
       Chargement des brasseries...
      </div>
 
 
     <!-- US 06 : expliquer l'échec avec un message d'erreur et un code. -->
-    <div v-if="error && !isLoading" role="alert" data-test="error">
+    <div v-if="error && !isLoading" class="error" role="alert" data-test="error">
       <p> {{  error.message }}</p>
       <p>Code : {{  error.code }}</p>
     </div>
@@ -41,6 +57,7 @@
       :brewery="brewery"
       @back="backToList"
     />
+    </section>
 
   </div>
 </template>
@@ -83,7 +100,7 @@ export default {
         this.details = false
         const response = await axios.get(
           // en ajoutant ?per_page=x permet d'afficher x brasseries au lieu de 20 par défaut
-          'https://api.openbrewerydb.org/v1/breweries'
+          'https://api.openbrewerydb.org/v1/breweries?per_page=21'
         )
 
         this.breweries = response.data
@@ -216,10 +233,111 @@ export default {
   width: 1.25rem;
   height: 1.25rem;
   margin-right: .5rem;
-  border: 3px solid #ddd;
-  border-top-color: #71451c;
+  border: 3px solid var(--line);
+  border-top-color: var(--amber);
   border-radius: 50%;
   animation: spin .8s linear infinite;
+}
+
+/* ---------- Design ---------- */
+.container {
+  width: 100%;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* Bandeau d'accueil : photo du bar (maquette) + dégradé vers le fond */
+.hero {
+  padding: 72px 0 40px;
+  background:
+    linear-gradient(180deg, rgba(28, 19, 12, 0.55) 0%, rgba(28, 19, 12, 0.85) 70%, var(--bg) 100%),
+    url('../assets/bar-bg.jpg') center 35% / cover;
+}
+.hero__inner {
+  max-width: 760px;
+  text-align: center;
+}
+.hero__title {
+  font-size: clamp(2rem, 5vw, 3.2rem);
+  letter-spacing: -0.01em;
+}
+.hero__subtitle {
+  margin: 12px auto 28px;
+  max-width: 560px;
+  color: var(--muted);
+}
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+.toolbar button {
+  padding: 0.45rem 0.95rem;
+  font-size: 14px;
+  background: rgba(28, 19, 12, 0.5);
+  border-radius: 999px;
+}
+
+/* Filtres repliables */
+.advanced {
+  margin-top: 18px;
+  text-align: left;
+}
+.advanced summary {
+  width: fit-content;
+  margin: 0 auto;
+  padding: 4px 8px;
+  font-size: 14px;
+  color: var(--amber);
+  cursor: pointer;
+  list-style: none;
+}
+.advanced summary::-webkit-details-marker {
+  display: none;
+}
+.advanced summary::after {
+  content: ' ▾';
+}
+.advanced[open] summary::after {
+  content: ' ▴';
+}
+
+.results {
+  padding-top: 8px;
+  padding-bottom: 24px;
+}
+
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 32px;
+  color: var(--muted);
+}
+.error {
+  max-width: 620px;
+  margin: 24px auto 0;
+  padding: 14px 16px;
+  background: rgba(60, 18, 10, 0.9);
+  border: 1px solid rgba(242, 163, 149, 0.4);
+  border-left-width: 4px;
+  border-radius: 10px;
+}
+.error p {
+  margin: 0;
+}
+.error p + p {
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+@media (max-width: 600px) {
+  .hero {
+    padding: 40px 0 28px;
+  }
 }
 
 /* US 06 : faire tourner le cercle. */

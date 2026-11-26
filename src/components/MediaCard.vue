@@ -34,35 +34,59 @@ const location = computed(() =>
 <style scoped>
 .media-card {
   display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 14px 18px;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
   text-align: left;
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
 }
-.media-card + .media-card {
-  border-top: 1px solid rgba(128, 128, 128, 0.3);
+.media-card:hover {
+  transform: translateY(-2px);
+  border-color: rgba(224, 160, 70, 0.45);
 }
 .media-card__main {
   flex: 1;
   min-width: 0;
 }
 .media-card__name {
-  margin: 0;
-  font-size: 17px;
+  margin: 0 0 10px;
+  font-family: 'Fraunces', Georgia, serif;
+  font-size: 19px;
+  line-height: 1.25;
 }
+/* Le type devient une petite étiquette */
 .media-card__type {
-  margin: 2px 0 0;
-  font-size: 14px;
+  display: inline-block;
+  margin: 0 0 8px;
+  padding: 2px 10px;
+  font-size: 12px;
+  font-weight: 600;
   text-transform: capitalize;
-  opacity: 0.75;
+  color: var(--beige);
+  background: rgba(243, 211, 174, 0.1);
+  border: 1px solid rgba(243, 211, 174, 0.25);
+  border-radius: 999px;
 }
 .media-card__location {
-  margin: 2px 0 0;
+  margin: 0;
   font-size: 14px;
-  opacity: 0.75;
+  color: var(--muted);
 }
 button {
-  flex: none;
-  cursor: pointer;
+  align-self: flex-start;
+  padding: 0.45rem 0.9rem;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--bg);
+  background: var(--beige);
+  border-color: var(--beige);
+}
+button:hover:not(:disabled) {
+  background: #f7dfc2;
 }
 </style>
