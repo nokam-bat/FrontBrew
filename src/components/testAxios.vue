@@ -25,37 +25,10 @@
     <!-- Affichage des brasseries (US 05 : MediaList + MediaCard) -->
     <!-- US 06 : masquer les anciennes cartes pendant le chargement. -->
     <MediaList
-      v-if="showBreweries && !error && !details && !isLoading"
+      v-if="showBreweries && !error && !isLoading"
       :items="breweries"
       :has-searched="hasSearched"
-      @details="getBreweryDetails"
     />
-
-    <!-- Détails de la brasserie -->
-     <!-- US 06 : masquer les anciens détails pendant l'attente ou une erreur. -->
-    <div v-if="details && !isLoading && !error">
-      <h1>{{ brewery.name }} - {{ brewery.brewery_type }}</h1>
-      <h2>Adresse</h2>
-      <p>
-        {{ brewery.address_1 }}
-        <br v-if="brewery.address_2">
-        {{ brewery.address_2 }}
-        <br v-if="brewery.address_3">
-        {{ brewery.address_3 }}
-        <br>
-        {{ brewery.postal_code }} {{ brewery.city }}
-        <br>
-        {{ brewery.state_province }}, {{ brewery.country }}
-      </p>
-      <h2 v-if="brewery.phone">Contact</h2>
-      <p v-if="brewery.phone">{{ brewery.phone }}</p>
-      <h2 v-if="brewery.website_url">Site web</h2>
-      <!-- Pour l'instant le lien ne fonctionne pas -->
-      <a href="brewery.website_url" target="_blank" rel="noopener noreferrer" v-if="brewery.website_url"> <!-- Modification de la syntaxe pour prévenir une erreur de compilation -->
-        {{ brewery.website_url }}
-      </a>
-    </div>
-
   </div>
 </template>
 
@@ -66,6 +39,7 @@ import SearchBar from './SearchBar.vue' // US 04 : importer le composant de barr
 import { searchBreweries as searchBreweriesApi} from '../services/breweries.js' // US 04 : importation de la fonction qui apelle l'API
 
 export default {
+  name: 'RechercheBrasseries',
   components: { MediaList, SearchBar },
 
   data() {
@@ -74,7 +48,6 @@ export default {
       showBreweries: true,
       error: null,
       isLoading: false, // US 06 : vrai uniquement pendant une requête HTTP.
-      details: false,
       hasSearched: false // US 05 : pour afficher « 404 - Not found » si la recherche ne trouve rien
     }
   },
@@ -90,7 +63,6 @@ export default {
       
       try {
         this.error = null
-        this.details = false
         const response = await axios.get(
           // en ajoutant ?per_page=x permet d'afficher x brasseries au lieu de 20 par défaut
           'https://api.openbrewerydb.org/v1/breweries'
@@ -118,7 +90,7 @@ export default {
     HideBreweries() {
       this.error = null
       this.showBreweries = false
-      this.details = false
+
     },
 
     // Chercher les brasseries en fonction de la requête de recherche (ex tester avec : Brouwhuys)
@@ -129,7 +101,6 @@ export default {
       this.isLoading = true
       try {
         this.error = null
-        this.details = false
         // US 04 : le service renvoie directement le tableau.
         this.breweries = await searchBreweriesApi(term)
         this.showBreweries = true
@@ -153,7 +124,7 @@ export default {
       this.isLoading = true
       try {
         this.error = null
-        this.details = false
+
         const response = await axios.get(
           'https://api.openbrewerydb.org/v1/breweries/random'
         )
@@ -172,32 +143,6 @@ export default {
         this.isLoading = false
       }
     },
-
-    // Récupérer les détails d'une brasserie spécifique
-    async getBreweryDetails(breweryId) {
-      if (this.isLoading) return
-      this.isLoading = true
-      try {
-        this.breweries = []
-        this.error = null
-        const response = await axios.get(
-          `https://api.openbrewerydb.org/v1/breweries/${breweryId}`
-        )
-
-        this.brewery = response.data
-        this.details = true
-      } catch (error) {
-        this.error = {
-          code: error.response?.status || error.code || 'UNKOWN_ERROR',
-          message: error.response
-          ? 'Le serveur ne peut pas traiter la demande. Réessaie plus tard.': error.request || error.code === 'ERR_NETWORK'
-          ? 'Impossible de joindre le serveur. Vérifie ta connexion et réessaie.' : 'Une erreur inattendue est survenue.',
-        }
-        console.error(error)
-      } finally {
-        this.isLoading = false
-      }
-    }
   }
 }
 </script>

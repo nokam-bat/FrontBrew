@@ -4,6 +4,7 @@ import { mount, flushPromises } from '@vue/test-utils'
 import axios from 'axios'
 import TestAxios from '../testAxios.vue'
 import MediaList from '../MediaList.vue'
+import router from '../../router'
 
 // Aucun appel au vrai serveur pendant ces tests.
 vi.mock('axios', () => ({ default: { get: vi.fn() } }))
@@ -23,7 +24,10 @@ describe('US 06 — chargement et erreurs', () => {
   let wrapper
   beforeEach(() => {
     axios.get.mockReset()
-    wrapper = mount(TestAxios, { attachTo: document.body})
+    wrapper = mount(TestAxios, {
+      attachTo: document.body,
+      global: { plugins: [router] },
+})
   })
   afterEach(() => {
     wrapper.unmount()
@@ -104,7 +108,6 @@ describe('US 06 — chargement et erreurs', () => {
   it.each([
     ['Voir tout', 'ShowBreweries', []],
     ['Aléatoire', 'getRandomBrewery', []],
-    ['Détails', 'getBreweryDetails', ['1']],
   ])('gère aussi le cycle de %s', async (label, method, args) => {
     const request = deferred()
     axios.get.mockReturnValueOnce(request.promise)
@@ -114,9 +117,7 @@ describe('US 06 — chargement et erreurs', () => {
     expect(wrapper.find('[data-test="loader"]').exists()).toBe(true)
     expect(wrapper.findComponent(MediaList).exists()).toBe(false)
 
-    request.resolve({ data: method === 'getBreweryDetails'
-      ? { id: '1', name: 'Résultat de test' }
-      : [{ id: '1', name: 'Résultat de test' }] })
+    request.resolve({ data: [{ id: '1', name: 'Résultat de test' }] })
     await pending
     await flushPromises()
 

@@ -1,6 +1,12 @@
-// createRouter pour créer le routeur
-// createWebHistory pour relier le routeur à la barre d'adresse et à l'historique du navigateur => pour utiliser les chemins et cliquer sur le bouton Précédent
-import {createRouter, createWebhistory} from 'vue-router' 
-import Search from '../components/testAxios.vue'
+import { createRouter, createWebHistory } from 'vue-router'
+import Recherche from '../components/testAxios.vue'
 import Detail from '../views/BrasserieDetailView.vue'
 
+export default createRouter({
+  history: createWebHistory(import.meta.env.BASE_URL),
+  routes: [
+    { path: '/', redirect: { name: 'recherche' } },
+    { path: '/recherche', name: 'recherche', component: Recherche },
+    { path: '/detail/:id', name: 'brasserie-detail', component: Detail, props: true },
+  ],
+})

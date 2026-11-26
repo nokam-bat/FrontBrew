@@ -9,8 +9,6 @@ defineProps({
   hasSearched: { type: Boolean, default: false },
 })
 
-// On fait remonter le clic « Voir les détails » au composant parent
-const emit = defineEmits(['details'])
 </script>
 
 <template>
@@ -24,7 +22,6 @@ const emit = defineEmits(['details'])
           v-for="brewery in items"
           :key="brewery.id"
           :brewery="brewery"
-          @details="(id) => emit('details', id)"
         />
       </ul>
     </template>

@@ -1,8 +1,7 @@
-<script setup>
-import Axios from './components/testAxios.vue'
-</script>
-
 <template>
-  <Axios />
+  <RouterView v-slot="{ Component }">
+    <KeepAlive include="RechercheBrasseries">
+      <component :is="Component" />
+    </KeepAlive>
+  </RouterView>
 </template>
-

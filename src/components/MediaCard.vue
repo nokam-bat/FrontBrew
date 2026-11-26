@@ -6,8 +6,6 @@ const props = defineProps({
   brewery: { type: Object, required: true },
 })
 
-const emit = defineEmits(['details'])
-
 // « San Diego, California, United States » (on ignore les champs vides)
 const location = computed(() =>
   [props.brewery.city, props.brewery.state_province, props.brewery.country]
@@ -25,9 +23,13 @@ const location = computed(() =>
       </p>
       <p v-if="location" class="media-card__location" data-test="location">{{ location }}</p>
     </div>
-    <button type="button" data-test="details" @click="emit('details', brewery.id)">
-      Voir les détails
-    </button>
+
+    <!-- lien au Router : US07-->
+    <RouterLink :to="{name: 'brasserie-detail', params: {id: brewery.id}}"
+      data-test="details"
+    >Voir les détails
+    </RouterLink>
+
   </li>
 </template>
 

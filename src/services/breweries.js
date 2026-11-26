@@ -14,3 +14,9 @@ export async function searchBreweries(rawQuery) {
   const response = await axios.get(url.toString())
   return response.data // Le tableau, pas l'objet réponse Axios complet.
 }
+
+export async function getBreweryById(id){
+  const url = 'https://api.openbrewerydb.org/v1/breweries/'
+  const { data } = await axios.get(url + encodeURIComponent(id))
+  return data
+}
