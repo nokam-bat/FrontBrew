@@ -70,18 +70,27 @@ function resetFilters() {
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 0.75rem;
   align-items: end;
-  margin: 16px 0;
+  margin: 12px 0 0;
+  padding: 16px;
+  background: rgba(28, 19, 12, 0.85);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
 }
 label {
   display: grid;
   gap: 0.35rem;
 }
 input,
-select,
-button {
-  font: inherit;
-  padding: 0.6rem;
-  border-radius: 0.4rem;
+select {
+  width: 100%;
+}
+button[type='submit'] {
+  color: #fff;
+  background: var(--brown);
+  border-color: var(--brown);
+}
+button[type='submit']:hover:not(:disabled) {
+  background: var(--brown-hover);
 }
 .filters__actions {
   display: flex;
@@ -97,6 +106,6 @@ button:disabled {
 .filters__message {
   grid-column: 1 / -1;
   margin: 0;
-  color: #b3261e;
+  color: var(--danger);
 }
 </style>

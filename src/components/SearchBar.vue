@@ -33,13 +33,15 @@ function submitSearch(event) {
 </script>
 
 <style scoped>
-.search-bar { display: flex; align-items: end; gap: .75rem; }
-label { display: grid; gap: .35rem; flex: 1; min-width: 0; }
-input, button { font: inherit; padding: .7rem; border-radius: .4rem; }
-input { width: 100%; box-sizing: border-box; border: 1px solid #71877b; }
-button { border: 0; background: #173d34; color: white; cursor: pointer; }
+.search-bar { display: flex; align-items: end; gap: .5rem; text-align: left; }
+label { display: grid; gap: .4rem; flex: 1; min-width: 0; }
+input { width: 100%; height: 52px; padding: 0 1rem; font-size: 1rem; border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+button { height: 52px; padding: 0 1.4rem; border: 0; border-radius: 10px; background: var(--brown);
+  color: #fff; font-weight: 600; cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, .25); }
+button:hover:not(:disabled) { background: var(--brown-hover); }
 button:disabled { opacity: .5; cursor: wait; }
-:focus-visible { outline: 3px solid #b67a13; outline-offset: 3px; }
+:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 @media (max-width: 600px) {
   .search-bar { flex-direction: column; align-items: stretch; }
 }

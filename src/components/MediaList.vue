@@ -42,24 +42,27 @@ const emit = defineEmits(['details'])
 <style scoped>
 .media-list {
   width: 100%;
-  max-width: 860px;
-  margin: 16px auto 0;
+  margin: 24px 0 0;
 }
 .media-list__count {
-  margin: 0 0 8px;
+  margin: 0 0 14px;
   font-size: 14px;
-  opacity: 0.75;
+  color: var(--muted);
 }
+/* Grille de cartes : 1 à 3 colonnes selon la largeur */
 .media-list__panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
   margin: 0;
   padding: 0;
   list-style: none;
-  border: 1px solid rgba(128, 128, 128, 0.3);
-  border-radius: 12px;
-  overflow: hidden;
 }
 .media-list__empty {
-  margin-top: 32px;
+  margin-top: 48px;
   text-align: center;
+}
+.media-list__empty p {
+  color: var(--muted);
 }
 </style>
